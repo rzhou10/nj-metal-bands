@@ -24,3 +24,9 @@ hs_err_pid*
 replay_pid*
 
 *.lst
+
+/.vscode
+
+.env
+
+hibernate.cfg.xml
