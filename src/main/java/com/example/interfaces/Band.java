@@ -12,9 +12,14 @@ public class Band {
     @JsonProperty("city")
     private String city;
 
-    public Band () {}
+    public Band(String bandName, int yearFormation, String genre, String city) {
+        this.bandName = bandName;
+        this.yearFormation = yearFormation;
+        this.genre = genre;
+        this.city = city;
+    }
 
-    public String getBandName () {
+    public String getBandName() {
         return this.bandName;
     }
 }

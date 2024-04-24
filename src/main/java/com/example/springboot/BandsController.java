@@ -18,30 +18,34 @@ import com.example.interfaces.Band;
 public class BandsController {
 
     @GetMapping("/fetch-bands")
-    public ArrayList<Band> fetchBands(@RequestBody String sortOrder) {
-        String sqlSelectAllPersons = "SELECT * FROM nj_metal.band";
+    public ResponseEntity<ArrayList<Band>> fetchBands(@RequestBody String sortOrder) {
+        String selectBands = "SELECT * FROM band";
 
         Dotenv dotenv = getEnv();
 
-        System.out.println(dotenv.get("URL"));
         DBInfo info = new DBInfo();
 
         String connectionUrl = "jdbc:mysql://localhost:3306/" + info.getDbName() + "?serverTimezone=UTC";
 
-        // String connectionUrl = String.format("%1$s%2$s", dotenv.get("URL"), dotenv.get("DATABASE"));
+        // String connectionUrl = String.format("%1$s%2$s", dotenv.get("URL"),
+        // dotenv.get("DATABASE"));
 
-        try (Connection conn = DriverManager.getConnection(connectionUrl, dotenv.get("MYSQL_USERNAME"),
-                dotenv.get("MYSQL_PASSWORD"));
-                PreparedStatement ps = conn.prepareStatement(sqlSelectAllPersons);
+        try (Connection conn = DriverManager.getConnection(connectionUrl, info.getUser(),
+                info.getPass());
+                PreparedStatement ps = conn.prepareStatement(selectBands);
                 ResultSet rs = ps.executeQuery()) {
-
             ArrayList<Band> results = new ArrayList<Band>();
 
-            return results;
+            while (rs.next()) {
+                Band b = new Band(rs.getString(1), rs.getInt(3), rs.getString(5), rs.getString(6));
+                results.add(b);
+            }
+
+            return ResponseEntity.status(HttpStatus.OK).body(results);
 
         } catch (SQLException e) {
-            // handle the exception
-            return new ArrayList<Band>(0);
+            System.out.println(e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new ArrayList<Band>(0));
         }
     }
 
@@ -65,10 +69,10 @@ public class BandsController {
                 DBInfo info = new DBInfo();
 
                 String connectionUrl = "jdbc:mysql://localhost:3306/" + info.getDbName() + "?serverTimezone=UTC";
-                String sqlSelectAllPersons = "Insert into nj_metal.band (band_name, year_formation, genre, city) values ('"
+                String selectBands = "Insert into nj_metal.band (band_name, year_formation, genre, city) values ('"
                         + entity.getBandName() + "', 0, '', '')";
                 Connection conn = DriverManager.getConnection(connectionUrl, info.getUser(), info.getPass());
-                PreparedStatement ps = conn.prepareStatement(sqlSelectAllPersons);
+                PreparedStatement ps = conn.prepareStatement(selectBands);
                 int rs = ps.executeUpdate();
                 if (rs == 1) {
                     return "Horray!";
