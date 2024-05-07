@@ -22,4 +22,16 @@ public class Band {
     public String getBandName() {
         return this.bandName;
     }
+
+    public int getYear() {
+        return this.yearFormation;
+    }
+
+    public String getCity() {
+        return this.city;
+    }
+
+    public String getGenre() {
+        return this.genre;
+    }
 }
